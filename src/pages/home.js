@@ -4,6 +4,8 @@ import { Button, TextField, Table, TableBody,
     TableCell, TableContainer, TableHead, 
     TableRow, Paper, Radio, RadioGroup,
     FormControlLabel} from '@material-ui/core';
+import { GreetingServiceClient } from '../greeting_grpc_web_pb';
+import { Person } from '../greeting_pb';
 
 const StyledTableCell = withStyles(theme => ({
     head: {
@@ -28,9 +30,11 @@ const useStyles = makeStyles({
         minWidth: 700,
     },
 });
+
 function createData(message, time) {
     return { message, time};
 };
+
 const rows = [
     createData('Hola alexis', 159),
 ];
@@ -41,6 +45,21 @@ export default () => {
     const handleChange = event => {
         setValue(event.target.value);
     };
+
+
+
+    const execute = () => {
+        //Conexion con el proxy
+        const cli = new GreetingServiceClient('http://localhost:8080');
+        let person = new Person();
+        person.setName('Alexis');
+        person.setTimestart('456');
+        console.log('Vamos bien che');
+        cli.hello(person, {}, (err, response) => {
+            console.log(response);
+        })
+    };
+
     return (
         <div>
             <TextField label="Ingrese un nombre" />
@@ -51,7 +70,7 @@ export default () => {
                 <FormControlLabel value="serverSide" control={<Radio />} label="Streaming del lado del servidor" />
                 <FormControlLabel value="bidirecctional" control={<Radio />} label="Streaming bidireccional" />
             </RadioGroup>
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={execute}>
                 Ejecutar
             </Button>
             <TableContainer component={Paper}>
