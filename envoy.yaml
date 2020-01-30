@@ -1,7 +1,8 @@
 admin:
   access_log_path: /tmp/admin_access.log
   address:
-    socket_address: { address: 0.0.0.0, port_value: 9901 }
+    socket_address: { address: 0.0.0.0, port_value: 8081 }
+
 static_resources:
   listeners:
     - name: listener_0
@@ -21,7 +22,7 @@ static_resources:
                       routes:
                         - match: { prefix: "/" }
                           route:
-                            cluster: greeter_service
+                            cluster: echo_service
                             max_grpc_timeout: 0s
                       cors:
                         allow_origin:
@@ -36,9 +37,9 @@ static_resources:
                   - name: envoy.cors
                   - name: envoy.router
   clusters:
-    - name: greeter_service
+    - name: echo_service
       connect_timeout: 0.25s
       type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
-      hosts: [{ socket_address: { address: localhost, port_value: 9090 }}]
+      hosts: [{ socket_address: { address: backend, port_value: 50051 }}]

@@ -1,30 +1,30 @@
 version: '3'
 services:
 
-  #backend:
-  #  build: backend
-  #  command: npm start
-  #  ports:
-  #    - 50051:50051
-  #  networks:
-  #    - envoymesh
-  #  volumes:
-  #    - ./backend:/usr/src/app:rw
-  #    - /usr/src/app/node_modules
+  backend:
+    build: backend
+    command: npm start
+    ports:
+      - 50051:50051
+    networks:
+      - envoymesh
+    volumes:
+      - ./backend:/usr/src/app:rw
+      - /usr/src/app/node_modules
 
-  #frontend:
-  #  build: frontend
-  #  command: npm start
-  #  depends_on:
-  #    - backend
-  #    - proxy
-  #  ports:
-  #    - 4200:4200
-  #  networks:
-  #    - envoymesh
-  #  volumes:
-  #    - ./frontend:/usr/src/app:rw
-  #    - /usr/src/app/node_modules
+  frontend:
+    build: frontend
+    command: npm start
+    depends_on:
+      - backend
+      - proxy
+    ports:
+      - 4200:4200
+    networks:
+      - envoymesh
+    volumes:
+      - ./frontend:/usr/src/app:rw
+      - /usr/src/app/node_modules
 
   proxy:
     image: envoyproxy/envoy-alpine:v1.10.0

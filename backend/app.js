@@ -1,4 +1,4 @@
-const PROTO_PATH = '/home/alexis/WebstormProjects/GRPC-Web-Client/server/greeting.proto';
+const PROTO_PATH = '/home/alexis/WebstormProjects/GRPC-Web-Client/backend/greeting.proto';
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
 const logger = require('simple-node-logger').createSimpleLogger();
@@ -25,7 +25,7 @@ function main() {
         helloBidirectional,
         helloClientSide
     });
-    server.bind( '0.0.0.0:9090', grpc.ServerCredentials.createInsecure());
+    server.bind( '0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
     server.start();
 }
 

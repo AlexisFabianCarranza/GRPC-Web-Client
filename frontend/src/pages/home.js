@@ -50,11 +50,10 @@ export default () => {
 
     const execute = () => {
         //Conexion con el proxy
-        const cli = new GreetingServiceClient('http://localhost:8080');
+        const cli = new GreetingServiceClient('http://localhost:8080',null, null);
         let person = new Person();
         person.setName('Alexis');
         person.setTimestart('456');
-        console.log('Vamos bien che');
         cli.hello(person, {}, (err, response) => {
             console.log(response);
         })
