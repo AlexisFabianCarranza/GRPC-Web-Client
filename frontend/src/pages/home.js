@@ -31,43 +31,96 @@ const useStyles = makeStyles({
     },
 });
 
-function createData(message, time) {
-    return { message, time};
+function createData(message, time, type) {
+    return { message, time, type};
 };
 
-const rows = [
-    createData('Hola alexis', 159),
-];
+
 
 export default () => {
     const classes = useStyles();
-    const [value, setValue] = React.useState('simple');
+    const [typeCommunication, setTypeCommunication] = React.useState('simple'); //simple clientSide serverSide bidirectional
+    const [name, setName] = React.useState('');
+    const [quantity, setQuantity] = React.useState(1);
+    const [responses, setResponses] = React.useState([]);
     const handleChange = event => {
-        setValue(event.target.value);
+        setTypeCommunication(event.target.value);
     };
 
-
-
+    const handleSimpleCommunication = (cli) => {
+        let person = new Person();
+        person.setName(name);
+        person.setTimestart(Date.now());
+        cli.hello(person, {}, (err, response) => {
+            setResponses(
+                responses.concat(createData(response.array[0], response.array[1], 'Simple'))
+            )
+        });
+    };
+    const handleClientSideCommunication = (cli) => {
+        /*let call = cli.helloClientSide(function(error) {
+            if (error) {
+                console.log(error);
+            }
+        });
+        for (let i = 0 ; i < quantity ; i++ ) {
+            call.write({
+                name,
+                timeStart: Date.now()
+            });
+        }
+        call.end();*/
+    };
+    const handleServerSideCommunication = (cli) => {
+        /*let call = cli.helloServerSide({});
+        call.on('data', function(feature) {
+            let responseTime = Date.now() - Number(feature.timeStart);
+        });
+        call.on('end', () =>  {
+        });*/
+    };
+    const handleBidirectionalCommunication = (cli) => {
+    };
     const execute = () => {
         //Conexion con el proxy
         const cli = new GreetingServiceClient('http://localhost:8080',null, null);
-        let person = new Person();
-        person.setName('Alexis');
-        person.setTimestart('456');
-        cli.hello(person, {}, (err, response) => {
-            console.log(response);
-        })
+        switch (typeCommunication) {
+            case 'simple':
+                handleSimpleCommunication(cli);
+                break;
+            case 'clientSide':
+                handleClientSideCommunication(cli);
+                break;
+            case 'serverSide':
+                handleServerSideCommunication(cli);
+                break;
+            case 'bidirectional':
+                handleBidirectionalCommunication(cli);
+                break;
+            default:
+                handleSimpleCommunication(cli);
+        }
     };
 
     return (
         <div>
-            <TextField label="Ingrese un nombre" />
-            <TextField label="Cantidad de repeticiones" type="number"/>
-            <RadioGroup aria-label="gender" name="gender1" value={value} onChange={handleChange}>
-                <FormControlLabel value="simple" control={<Radio />} label="Simple" />
+            <TextField
+                label="Ingrese un nombre"
+                value={name}
+                onChange={event => setName(event.target.value)}
+            />
+            <TextField
+                label="Cantidad de repeticiones"
+                type="number"
+                value={quantity}
+                onChange={event => setQuantity(parseInt(event.target.value))}
+                disabled={(typeCommunication === 'simple')}
+            />
+            <RadioGroup aria-label="gender" name="gender1" value={typeCommunication} onChange={handleChange}>
+                <FormControlLabel value="simple"  control={<Radio />} label="Simple" />
                 <FormControlLabel value="clientSide" control={<Radio />} label="Streaming del lado del cliente" />
                 <FormControlLabel value="serverSide" control={<Radio />} label="Streaming del lado del servidor" />
-                <FormControlLabel value="bidirecctional" control={<Radio />} label="Streaming bidireccional" />
+                <FormControlLabel value="bidirectional" control={<Radio />} label="Streaming bidireccional" />
             </RadioGroup>
             <Button variant="contained" color="primary" onClick={execute}>
                 Ejecutar
@@ -76,18 +129,17 @@ export default () => {
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                     <TableRow>
-                        <StyledTableCell>Mensaje de respuesta</StyledTableCell>
+                        <StyledTableCell align="left">Mensaje de respuesta</StyledTableCell>
                         <StyledTableCell align="left">Tiempo de respuesta</StyledTableCell>
+                        <StyledTableCell align="left">Tipo de comunicacion</StyledTableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {rows.map(row => (
+                    {responses.map(row => (
                         <StyledTableRow key={row.name}>
-                            <StyledTableCell component="th" scope="row">
-                                {row.name}
-                            </StyledTableCell>
                             <StyledTableCell align="left">{row.message}</StyledTableCell>
                             <StyledTableCell align="left">{row.time}</StyledTableCell>
+                            <StyledTableCell align="left">{row.type}</StyledTableCell>
                         </StyledTableRow>
                     ))}
                     </TableBody>
