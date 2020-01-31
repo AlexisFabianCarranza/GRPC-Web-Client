@@ -1,15 +1,13 @@
 FROM node:8
 
-# Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+COPY [".", "/usr/src/"]
 
-# Install app dependencies
-COPY package.json /usr/src/app
+COPY ["./greeting.proto", "/usr/"]
+
+WORKDIR /usr/src
+
 RUN npm install
 
-# Bundle app source
-COPY . /usr/src/app
-
 EXPOSE 50051
-CMD ["npm", "start"]
+
+CMD npm run dev

@@ -1,6 +1,5 @@
 version: '3'
 services:
-
   backend:
     build: backend
     command: npm start
@@ -19,13 +18,12 @@ services:
       - backend
       - proxy
     ports:
-      - 4200:4200
+      - 3000:3000
     networks:
       - envoymesh
     volumes:
       - ./frontend:/usr/src/app:rw
       - /usr/src/app/node_modules
-
   proxy:
     image: envoyproxy/envoy-alpine:v1.10.0
     environment:

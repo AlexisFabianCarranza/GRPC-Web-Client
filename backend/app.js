@@ -1,4 +1,4 @@
-const PROTO_PATH = '/home/alexis/WebstormProjects/GRPC-Web-Client/backend/greeting.proto';
+const PROTO_PATH = './greeting.proto';
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
 const logger = require('simple-node-logger').createSimpleLogger();
