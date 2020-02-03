@@ -43,6 +43,7 @@ export default () => {
     const [name, setName] = React.useState('');
     const [quantity, setQuantity] = React.useState(1);
     const [responses, setResponses] = React.useState([]);
+
     const handleChange = event => {
         setTypeCommunication(event.target.value);
     };
@@ -64,15 +65,13 @@ export default () => {
                 console.log(error);
             }
         });
+        let person = new Person();
         for (let i = 0 ; i < quantity ; i++) {
-            let person = new Person();
             person.setName(name);
             person.setTimestart(Date.now());
             stream.write(person);
-            setResponses(
-                responses.concat(createData(person.getName(), quantity + ' mensajes enviados', 'Streaming del lado del cliente'))
-            );
         }
+        setResponses(responses => [...responses, createData(person.getName(), quantity + ' mensajes enviados', 'Streaming del lado del cliente')]);
         stream.end();
     };
 
@@ -83,11 +82,7 @@ export default () => {
         person.setTimestart(Date.now());
         let stream =cli.helloServerSide(person, {}, {});
         stream.on('data',  async function(message) {
-            setResponses(
-                [
-                    ...responses,
-                    createData(message.array[0], message.array[1], 'Streaming del lado del servidor')
-            ]);
+            setResponses(responses => [...responses, createData(message.array[0], message.array[1], 'Streaming del lado del servidor')]);
         });
         stream.on('end', () =>  {
         });
@@ -101,14 +96,10 @@ export default () => {
             person.setName(name);
             person.setTimestart(Date.now());
             stream.write(person);
-            setResponses(
-                responses.concat(createData(person.getName(), quantity + ' mensajes enviados', 'Bidireccional'))
-            );
+            setResponses(responses => [...responses, createData(person.getName(), quantity + ' mensajes enviados', 'Bidireccional/Envio')]);
         }
         stream.on('data', (message) => {
-            setResponses(
-                responses.concat(createData(message.array[0], message.array[1], 'Bidireccional'))
-            )
+            setResponses(responses => [...responses, createData(message.array[0], message.array[1], 'Bidireccional/Recepcion')]);
         });
         stream.on('end', () => {
             console.log('Finalizo la comunicacion bidireccional');
@@ -118,6 +109,7 @@ export default () => {
 
     const execute = () => {
         //Conexion con el proxy
+
         const cli = new GreetingServiceClient('http://localhost:8080',null, null);
         switch (typeCommunication) {
             case 'simple':
@@ -149,7 +141,7 @@ export default () => {
                 type="number"
                 value={quantity}
                 onChange={event => setQuantity(parseInt(event.target.value))}
-                disabled={(typeCommunication === 'simple')}
+                disabled={(typeCommunication === 'simple' || typeCommunication === 'serverSide')}
             />
             <RadioGroup aria-label="gender" name="gender1" value={typeCommunication} onChange={handleChange}>
                 <FormControlLabel value="simple"  control={<Radio />} label="Simple" />
@@ -170,13 +162,14 @@ export default () => {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {responses.map(row => (
-                        <StyledTableRow key={row.name}>
+                    {responses.map((row, i) => (
+                        <StyledTableRow key={i}>
                             <StyledTableCell align="left">{row.message}</StyledTableCell>
                             <StyledTableCell align="left">{row.time}</StyledTableCell>
                             <StyledTableCell align="left">{row.type}</StyledTableCell>
                         </StyledTableRow>
-                    ))}
+                    ))
+                    }
                     </TableBody>
                 </Table>
             </TableContainer>
