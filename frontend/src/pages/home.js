@@ -54,12 +54,11 @@ export default () => {
         cli.hello(person, {}, (err, response) => {
             setResponses(
                 responses.concat(createData(response.array[0], response.array[1], 'Simple'))
-            )
+            );
         });
     };
+
     const handleClientSideCommunication = (cli) => {
-        /*Not supported*/
-        console.log('Comienza client side');
         let stream = cli.helloClientSide(function(error) {
             if (error) {
                 console.log(error);
@@ -70,42 +69,53 @@ export default () => {
             person.setName(name);
             person.setTimestart(Date.now());
             stream.write(person);
-            console.log(i);
             setResponses(
                 responses.concat(createData(person.getName(), quantity + ' mensajes enviados', 'Streaming del lado del cliente'))
             );
         }
         stream.end();
     };
+
     const handleServerSideCommunication = (cli) => {
         console.log('Streaming del lado del serv');
-        let stream = cli.helloServerSide({});
-        /*stream.on('data', function(message) {
-            console.log(message);
-            let responseTime = Date.now() - Number(message.timeStart);
+        let person = new Person();
+        person.setName(name);
+        person.setTimestart(Date.now());
+        let stream =cli.helloServerSide(person, {}, {});
+        stream.on('data',  async function(message) {
+            setResponses(
+                [
+                    ...responses,
+                    createData(message.array[0], message.array[1], 'Streaming del lado del servidor')
+            ]);
         });
         stream.on('end', () =>  {
-        });*/
+        });
     };
+
     const handleBidirectionalCommunication = (cli) => {
         console.log('Streaming bidireccional');
         const stream = cli.helloBidirectional();
-        /*stream.write({
-            name: 'Alexis',
-            timeStart: '1234'
-        });*/
+        for (let i = 0 ; i < quantity ; i++) {
+            let person = new Person();
+            person.setName(name);
+            person.setTimestart(Date.now());
+            stream.write(person);
+            setResponses(
+                responses.concat(createData(person.getName(), quantity + ' mensajes enviados', 'Bidireccional'))
+            );
+        }
         stream.on('data', (message) => {
             setResponses(
                 responses.concat(createData(message.array[0], message.array[1], 'Bidireccional'))
             )
         });
-
-        /*stream.on('end', () => {
-            console.log('ApiService.getStream.end');
-            // obs.error();
-        });*/
+        stream.on('end', () => {
+            console.log('Finalizo la comunicacion bidireccional');
+        });
 
     };
+
     const execute = () => {
         //Conexion con el proxy
         const cli = new GreetingServiceClient('http://localhost:8080',null, null);
