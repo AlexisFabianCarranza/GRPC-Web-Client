@@ -4,7 +4,7 @@ import { Button, TextField, Table, TableBody,
     TableCell, TableContainer, TableHead, 
     TableRow, Paper, Radio, RadioGroup,
     FormControlLabel} from '@material-ui/core';
-import { GreetingServiceClient } from '../greeting_grpc_web_pb';
+import { GreetingServiceClient } from '../greeting_pb_service';
 import { Person } from '../greeting_pb';
 
 const StyledTableCell = withStyles(theme => ({
@@ -58,20 +58,10 @@ export default () => {
         });
     };
     const handleClientSideCommunication = (cli) => {
-        /*let call = cli.helloClientSide(function(error) {
-            if (error) {
-                console.log(error);
-            }
-        });
-        for (let i = 0 ; i < quantity ; i++ ) {
-            call.write({
-                name,
-                timeStart: Date.now()
-            });
-        }
-        call.end();*/
+        /*Not supported*/
     };
     const handleServerSideCommunication = (cli) => {
+        console.log('Streaming del lado del serv');
         /*let call = cli.helloServerSide({});
         call.on('data', function(feature) {
             let responseTime = Date.now() - Number(feature.timeStart);
@@ -80,6 +70,21 @@ export default () => {
         });*/
     };
     const handleBidirectionalCommunication = (cli) => {
+        console.log('Streaming bidireccional');
+        const stream = cli.helloBidirectional();
+        stream.write({
+            name: 'Alexis',
+            timeStart: '1234'
+        });
+        /*stream.on('data', (message) => {
+            console.log('ApiService.getStream.data', message.toObject());
+        });
+
+        stream.on('end', () => {
+            console.log('ApiService.getStream.end');
+            // obs.error();
+        });*/
+
     };
     const execute = () => {
         //Conexion con el proxy
@@ -88,15 +93,11 @@ export default () => {
             case 'simple':
                 handleSimpleCommunication(cli);
                 break;
-            case 'clientSide':
-                handleClientSideCommunication(cli);
-                break;
             case 'serverSide':
                 handleServerSideCommunication(cli);
                 break;
             case 'bidirectional':
                 handleBidirectionalCommunication(cli);
-                break;
             default:
                 handleSimpleCommunication(cli);
         }
@@ -118,9 +119,9 @@ export default () => {
             />
             <RadioGroup aria-label="gender" name="gender1" value={typeCommunication} onChange={handleChange}>
                 <FormControlLabel value="simple"  control={<Radio />} label="Simple" />
-                <FormControlLabel value="clientSide" control={<Radio />} label="Streaming del lado del cliente" />
                 <FormControlLabel value="serverSide" control={<Radio />} label="Streaming del lado del servidor" />
-                <FormControlLabel value="bidirectional" control={<Radio />} label="Streaming bidireccional" />
+                <FormControlLabel value="clientSide" control={<Radio />} label="Streaming del lado del cliente / No sportado actualmente" />
+                <FormControlLabel value="bidirectional" control={<Radio />} label="Streaming bidireccional / No soportado actualmente" />
             </RadioGroup>
             <Button variant="contained" color="primary" onClick={execute}>
                 Ejecutar

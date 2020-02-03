@@ -3,21 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@improbable-eng/grpc-web": "^0.12.0",
     "@material-ui/core": "^4.9.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "core-js": "^2.5.4",
     "google-protobuf": "^3.11.2",
     "grpc-web": "^1.0.7",
+    "protoc": "^1.0.4",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-scripts": "3.3.0"
+    "react-scripts": "3.3.0",
+    "rxjs": "~6.3.3",
+    "ts-protoc-gen": "^0.9.0",
+    "tslib": "^1.9.0",
+    "zone.js": "~0.8.26"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "compile": "./node_modules/protoc/protoc/bin/protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./src --ts_out=service=true:src/ -I ../backend/ ../backend/*.proto"
   },
   "eslintConfig": {
     "extends": "react-app"
