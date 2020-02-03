@@ -1,8 +1,28 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Docker
+## Pre-requisitos
+Debes tener instalado:
++ Node
++ Git
++ Docker
++ Docker Compose
 
-### `docker-compose up --build -d`
+## GRPC - Despliegue
+1. Clonar el repo o descargar el repositorio:
+```bash
+git clone https://github.com/AlexisFabianCarranza/GRPC-Web-Client.git
+```
+2. Posicionarse sobre la carpeta GRPC y ejecutar el siguiente comando para contruir la imagen y el contenedor:
+```bash
+docker-compose up --build -d
+```
+3. Verificar que el contenedor se encuentre levantado:
+```bash
+docker-compose ps
+```
+5. Ingresar a la siguiente URL para probar las distintas comunicaciones: <br>
+a) [http://localhost:3000/](http://localhost:3000/) <br>
+
 
 ## Available Scripts
 
