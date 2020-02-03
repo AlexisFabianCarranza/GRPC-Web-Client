@@ -59,28 +59,48 @@ export default () => {
     };
     const handleClientSideCommunication = (cli) => {
         /*Not supported*/
+        console.log('Comienza client side');
+        let stream = cli.helloClientSide(function(error) {
+            if (error) {
+                console.log(error);
+            }
+        });
+        for (let i = 0 ; i < quantity ; i++) {
+            let person = new Person();
+            person.setName(name);
+            person.setTimestart(Date.now());
+            stream.write(person);
+            console.log(i);
+            setResponses(
+                responses.concat(createData(person.getName(), quantity + ' mensajes enviados', 'Streaming del lado del cliente'))
+            );
+        }
+        stream.end();
     };
     const handleServerSideCommunication = (cli) => {
         console.log('Streaming del lado del serv');
-        /*let call = cli.helloServerSide({});
-        call.on('data', function(feature) {
-            let responseTime = Date.now() - Number(feature.timeStart);
+        let stream = cli.helloServerSide({});
+        /*stream.on('data', function(message) {
+            console.log(message);
+            let responseTime = Date.now() - Number(message.timeStart);
         });
-        call.on('end', () =>  {
+        stream.on('end', () =>  {
         });*/
     };
     const handleBidirectionalCommunication = (cli) => {
         console.log('Streaming bidireccional');
         const stream = cli.helloBidirectional();
-        stream.write({
+        /*stream.write({
             name: 'Alexis',
             timeStart: '1234'
-        });
-        /*stream.on('data', (message) => {
-            console.log('ApiService.getStream.data', message.toObject());
+        });*/
+        stream.on('data', (message) => {
+            setResponses(
+                responses.concat(createData(message.array[0], message.array[1], 'Bidireccional'))
+            )
         });
 
-        stream.on('end', () => {
+        /*stream.on('end', () => {
             console.log('ApiService.getStream.end');
             // obs.error();
         });*/
@@ -93,11 +113,15 @@ export default () => {
             case 'simple':
                 handleSimpleCommunication(cli);
                 break;
+            case 'clientSide':
+                handleClientSideCommunication(cli);
+                break;
             case 'serverSide':
                 handleServerSideCommunication(cli);
                 break;
             case 'bidirectional':
                 handleBidirectionalCommunication(cli);
+                break;
             default:
                 handleSimpleCommunication(cli);
         }
@@ -120,8 +144,8 @@ export default () => {
             <RadioGroup aria-label="gender" name="gender1" value={typeCommunication} onChange={handleChange}>
                 <FormControlLabel value="simple"  control={<Radio />} label="Simple" />
                 <FormControlLabel value="serverSide" control={<Radio />} label="Streaming del lado del servidor" />
-                <FormControlLabel value="clientSide" control={<Radio />} label="Streaming del lado del cliente / No sportado actualmente" />
-                <FormControlLabel value="bidirectional" control={<Radio />} label="Streaming bidireccional / No soportado actualmente" />
+                <FormControlLabel value="clientSide" control={<Radio />} label="Streaming del lado del cliente" />
+                <FormControlLabel value="bidirectional" control={<Radio />} label="Streaming bidireccional" />
             </RadioGroup>
             <Button variant="contained" color="primary" onClick={execute}>
                 Ejecutar
@@ -131,7 +155,7 @@ export default () => {
                     <TableHead>
                     <TableRow>
                         <StyledTableCell align="left">Mensaje de respuesta</StyledTableCell>
-                        <StyledTableCell align="left">Tiempo de respuesta</StyledTableCell>
+                        <StyledTableCell align="left">Tiempo de respuesta/Cantidad de mensajes</StyledTableCell>
                         <StyledTableCell align="left">Tipo de comunicacion</StyledTableCell>
                     </TableRow>
                     </TableHead>

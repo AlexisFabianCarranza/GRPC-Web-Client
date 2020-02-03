@@ -58,13 +58,21 @@ function helloClientSide(call, callback) {
 function helloServerSide(call, callback) {
     logger.info('---------------------------------------------------------------------------------');
     logger.info('Server Side Streaming gRPC - Start - Server');
-    eteam.forEach(person => {
+    call.write( {
+        message: 'Hola querido ',
+        timeStart: Date.now()
+    });
+    /*eteam.forEach(person => {
             call.write( {
                 message: 'Hola querido ' + person,
-                timeStart: Date.now()
+                timeStart: '123'//Date.now()
             });
+        {
+            message: 'Hola querido ' + name,
+                timeStart: Date.now()
         }
-    );
+        }
+    );*/
     call.end();
     logger.info('Server Side Streaming gRPC - End - Server');
 }
