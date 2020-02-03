@@ -15,7 +15,7 @@ message Empty {}
 
 service GreetingService {
     rpc hello (Person) returns (Greeting) {};
-    rpc helloServerSide (Empty) returns (stream Greeting) {};
+    rpc helloServerSide (Person) returns (stream Greeting) {};
     rpc helloClientSide (stream Person) returns (Greeting) {};
     rpc helloBidirectional (stream Person) returns (stream Greeting) {};
 }
