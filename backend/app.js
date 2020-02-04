@@ -2,7 +2,6 @@ const PROTO_PATH = './greeting.proto';
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
 const logger = require('simple-node-logger').createSimpleLogger();
-const eteam = ['Leo' , 'Rodri', 'Fran', 'Damian', 'Mati', 'Alex'];
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,

@@ -7,6 +7,8 @@ import { Button, TextField, Table, TableBody,
 import { GreetingServiceClient } from '../greeting_pb_service';
 import { Person } from '../greeting_pb';
 
+const IP_HOST = process.env.IP_HOST || 'localhost';
+
 const StyledTableCell = withStyles(theme => ({
     head: {
       backgroundColor: theme.palette.common.black,
@@ -110,7 +112,7 @@ export default () => {
     const execute = () => {
         //Conexion con el proxy
 
-        const cli = new GreetingServiceClient('http://localhost:8080',null, null);
+        const cli = new GreetingServiceClient('http://' + IP_HOST + ':8080',null, null);
         switch (typeCommunication) {
             case 'simple':
                 handleSimpleCommunication(cli);

@@ -14,6 +14,8 @@ services:
   frontend:
     build: frontend
     command: npm start
+    environment:
+      - "IP_HOST=${IP_HOST}"
     depends_on:
       - backend
       - proxy
