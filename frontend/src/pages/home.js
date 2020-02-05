@@ -3,9 +3,10 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Button, TextField, Table, TableBody,
     TableCell, TableContainer, TableHead, 
     TableRow, Paper, Radio, RadioGroup,
-    FormControlLabel} from '@material-ui/core';
+    FormControlLabel, Typography } from '@material-ui/core';
 import { GreetingServiceClient } from '../greeting_pb_service';
 import { Person } from '../greeting_pb';
+import '../styles/home.css';
 
 const IP_HOST = process.env.IP_HOST || 'localhost';
 
@@ -30,14 +31,13 @@ const StyledTableRow = withStyles(theme => ({
 const useStyles = makeStyles({
     table: {
         minWidth: 700,
-    },
+    }
+
 });
 
 function createData(message, time, type) {
     return { message, time, type};
 };
-
-
 
 export default () => {
     const classes = useStyles();
@@ -56,7 +56,7 @@ export default () => {
         person.setTimestart(Date.now());
         cli.hello(person, {}, (err, response) => {
             setResponses(
-                responses.concat(createData(response.array[0], response.array[1], 'Simple'))
+                responses.concat(createData(response.array[0], (Date.now() - response.array[1]) + ' ms', 'Simple'))
             );
         });
     };
@@ -84,7 +84,7 @@ export default () => {
         person.setTimestart(Date.now());
         let stream =cli.helloServerSide(person, {}, {});
         stream.on('data',  async function(message) {
-            setResponses(responses => [...responses, createData(message.array[0], message.array[1], 'Streaming del lado del servidor')]);
+            setResponses(responses => [...responses, createData(message.array[0], (Date.now() - message.array[1]) + ' ms', 'Streaming del lado del servidor')]);
         });
         stream.on('end', () =>  {
         });
@@ -93,15 +93,15 @@ export default () => {
     const handleBidirectionalCommunication = (cli) => {
         console.log('Streaming bidireccional');
         const stream = cli.helloBidirectional();
+        let person = new Person();
         for (let i = 0 ; i < quantity ; i++) {
-            let person = new Person();
             person.setName(name);
             person.setTimestart(Date.now());
             stream.write(person);
-            setResponses(responses => [...responses, createData(person.getName(), quantity + ' mensajes enviados', 'Bidireccional/Envio')]);
         }
+        setResponses(responses => [...responses, createData(person.getName(), quantity + ' mensajes enviados', 'Bidireccional/Envio')]);
         stream.on('data', (message) => {
-            setResponses(responses => [...responses, createData(message.array[0], message.array[1], 'Bidireccional/Recepcion')]);
+            setResponses(responses => [...responses, createData(message.array[0], (Date.now() - message.array[1]) + ' ms', 'Bidireccional/Recepcion')]);
         });
         stream.on('end', () => {
             console.log('Finalizo la comunicacion bidireccional');
@@ -111,7 +111,6 @@ export default () => {
 
     const execute = () => {
         //Conexion con el proxy
-
         const cli = new GreetingServiceClient('http://' + IP_HOST + ':8080',null, null);
         switch (typeCommunication) {
             case 'simple':
@@ -133,27 +132,32 @@ export default () => {
 
     return (
         <div>
-            <TextField
-                label="Ingrese un nombre"
-                value={name}
-                onChange={event => setName(event.target.value)}
-            />
-            <TextField
-                label="Cantidad de repeticiones"
-                type="number"
-                value={quantity}
-                onChange={event => setQuantity(parseInt(event.target.value))}
-                disabled={(typeCommunication === 'simple' || typeCommunication === 'serverSide')}
-            />
-            <RadioGroup aria-label="gender" name="gender1" value={typeCommunication} onChange={handleChange}>
-                <FormControlLabel value="simple"  control={<Radio />} label="Simple" />
-                <FormControlLabel value="serverSide" control={<Radio />} label="Streaming del lado del servidor" />
-                <FormControlLabel value="clientSide" control={<Radio />} label="Streaming del lado del cliente" />
-                <FormControlLabel value="bidirectional" control={<Radio />} label="Streaming bidireccional" />
-            </RadioGroup>
-            <Button variant="contained" color="primary" onClick={execute}>
-                Ejecutar
-            </Button>
+            <Typography variant="h3" component="h2" gutterBottom>
+                Prueba Grpc Web - React
+            </Typography>
+            <div className={'container-home'}>
+                <TextField
+                    label="Ingrese un nombre"
+                    value={name}
+                    onChange={event => setName(event.target.value)}
+                />
+                <TextField
+                    label="Cantidad de repeticiones"
+                    type="number"
+                    value={quantity}
+                    onChange={event => setQuantity(parseInt(event.target.value))}
+                    disabled={(typeCommunication === 'simple' || typeCommunication === 'serverSide')}
+                />
+                <RadioGroup aria-label="gender" name="gender1" value={typeCommunication} onChange={handleChange}>
+                    <FormControlLabel value="simple"  control={<Radio />} label="Simple" />
+                    <FormControlLabel value="serverSide" control={<Radio />} label="Streaming del lado del servidor" />
+                    <FormControlLabel value="clientSide" control={<Radio />} label="Streaming del lado del cliente" />
+                    <FormControlLabel value="bidirectional" control={<Radio />} label="Streaming bidireccional" />
+                </RadioGroup>
+                <Button variant="contained" color="primary" onClick={execute}>
+                    Ejecutar
+                </Button>
+            </div>
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
